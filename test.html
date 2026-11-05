@@ -1,0 +1,28 @@
+<!doctype html><meta charset=utf-8><title>dial test</title>
+<pre id=o>starting...</pre>
+<script>
+const o=document.getElementById('o');
+const log=s=>{o.textContent+='\n'+s;};
+try{
+const b64=location.hash.slice(1);
+if(!b64){log('NO HASH: append #base64-sub');throw new Error('no hash');}
+let link=atob(b64).trim();
+log('link prefix: '+link.slice(0,12));
+const m=link.match(/^vless:\/\/([^@]+)@([^:\/?#]+):(\d+)\?([^#]*)#?(.*)$/);
+if(!m){log('PARSE FAIL');throw new Error('parse');}
+const uuid=m[1], host=m[2], port=m[3];
+const q=new URLSearchParams(m[4]);
+const path=decodeURIComponent(q.get('path')||'/');
+log('host='+host+' port='+port+' path='+path);
+function ub(u){const h=u.replace(/-/g,'');const b=new Uint8Array(16);for(let i=0;i<16;i++)b[i]=parseInt(h.slice(i*2,i*2+2),16);return b;}
+const ws=new WebSocket('wss://'+host+path);
+ws.binaryType='arraybuffer';
+let chunks=[];
+log('WS connecting...');
+ws.onopen=()=>{log('WS OPEN (TLS+WS OK)');const dst='example.com';const pay=new TextEncoder().encode('GET / HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n');const hdr=new Uint8Array(1+16+1+1+2+1+1+dst.length);let p=0;hdr[p++]=0;hdr.set(ub(uuid),p);p+=16;hdr[p++]=0;hdr[p++]=1;hdr[p++]=0;hdr[p++]=80;hdr[p++]=2;hdr[p++]=dst.length;for(let i=0;i<dst.length;i++)hdr[p++]=dst.charCodeAt(i);const msg=new Uint8Array(hdr.length+pay.length);msg.set(hdr,0);msg.set(pay,hdr.length);ws.send(msg);log('VLESS handshake + HTTP GET sent');};
+ws.onmessage=e=>{const d=new Uint8Array(e.data);for(let i=0;i<d.length;i++)chunks.push(d[i]);const t=new TextDecoder().decode(new Uint8Array(chunks));log('bytes='+chunks.length);if(t.indexOf('Example Domain')>=0){log('DIAL TEST PASSED');log(t.slice(0,400));ws.close();}};
+ws.onerror=()=>log('WS ERROR');
+ws.onclose=e=>log('WS closed code='+e.code);
+setTimeout(()=>{log('T20 state='+ws.readyState+' bytes='+chunks.length);},20000);
+}catch(err){log('ERR: '+err.message);}
+</script>
