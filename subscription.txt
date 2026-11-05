@@ -1,0 +1,4 @@
+vless://a7c4e2f1-9b3d-4f6a-8e2c-5d1a3b7f9e04@velixir-xray-production.up.railway.app:443?encryption=none&security=tls&type=ws&host=velixir-xray-production.up.railway.app&path=%2Ftk-rail#Velixir-1
+
+Subscription (base64 of the link above):
+dmxlc3M6Ly9hN2M0ZTJmMS05YjNkLTRmNmEtOGUyYy01ZDFhM2I3ZjllMDRAdmVsaXhpci14cmF5LXByb2R1Y3Rpb24udXAucmFpbHdheS5hcHA6NDQzP2VuY3J5cHRpb249bm9uZSZzZWN1cml0eT10bHMmdHlwZT13cyZob3N0PXZlbGl4aXIteHJheS1wcm9kdWN0aW9uLnVwLnJhaWx3YXkuYXBwJnBhdGg9JTJGdGstcmFpbCNWZWxpeGlyLTEK
